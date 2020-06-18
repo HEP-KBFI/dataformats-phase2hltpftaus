@@ -10,9 +10,9 @@ PFTauPair::PFTauPair()
 PFTauPair::PFTauPair(const reco::PFTauRef& leadPFTau, double leadPFTau_sumChargedIso, const reco::PFTauRef& subleadPFTau, double subleadPFTau_sumChargedIso, double dz)
   : LeafCandidate(leadPFTau->charge() + subleadPFTau->charge(), 
                   leadPFTau->p4() + subleadPFTau->p4(), 
-                  reco::LeafCandidate::Point(0.5*(leadPFTau->vertex().x() + leadPFTau->vertex().x()), 
-                                             0.5*(leadPFTau->vertex().y() + leadPFTau->vertex().y()), 
-                                             0.5*(leadPFTau->vertex().z() + leadPFTau->vertex().z())))
+                  reco::LeafCandidate::Point(0.5*(leadPFTau->vertex().x() + subleadPFTau->vertex().x()), 
+                                             0.5*(leadPFTau->vertex().y() + subleadPFTau->vertex().y()), 
+                                             0.5*(leadPFTau->vertex().z() + subleadPFTau->vertex().z())))
    , leadPFTau_(leadPFTau)
    , leadPFTau_sumChargedIso_(leadPFTau_sumChargedIso)
    , subleadPFTau_(subleadPFTau)
@@ -74,6 +74,7 @@ std::ostream& operator<<(std::ostream& out, const PFTauPair& pfTauPair)
       << " phi = " << leadPFTau->phi() << "," 
       << " decayMode = " << leadPFTau->decayMode() << "," 
       << " mass = " << leadPFTau->mass() << std::endl;
+  out << " vertex: x = " << leadPFTau->vertex().x() << ", y = " << leadPFTau->vertex().y() << ", z = " << leadPFTau->vertex().z() << std::endl;
   const reco::PFCandidatePtr leadPFTau_leadPFChargedHadrCand = leadPFTau->leadPFChargedHadrCand();  
   out << " leadChargedHadrCand:";
   if ( leadPFTau_leadPFChargedHadrCand.isNonnull() && leadPFTau_leadPFChargedHadrCand.isAvailable() )
@@ -86,19 +87,18 @@ std::ostream& operator<<(std::ostream& out, const PFTauPair& pfTauPair)
     const reco::Track* leadPFTau_leadTrack = leadPFTau_leadPFChargedHadrCand->bestTrack();
     if ( leadPFTau_leadTrack )
     {
-      out << " x = " << leadPFTau_leadTrack->vertex().x() << ", y = " << leadPFTau_leadTrack->vertex().y() << ", z = " << leadPFTau_leadTrack->vertex().z() << std::endl;
+      out << " x = " << leadPFTau_leadTrack->vertex().x() << ", y = " << leadPFTau_leadTrack->vertex().y() << ", z = " << leadPFTau_leadTrack->vertex().z() 
+          << " (dz = " << leadPFTau_leadTrack->dz(pfTauPair.vertex()) << ")" << std::endl;
     } 
     else 
     {
-      out << " N/A";
+      out << " N/A" << std::endl;
     }
-    out << std::endl;
   } 
   else
   {
-    out << " N/A";
+    out << " N/A" << std::endl;
   }
-  out << std::endl;
   out << " sumChargedIso = " << pfTauPair.leadPFTau_sumChargedIso() << std::endl;
 
   const reco::PFTauRef& subleadPFTau = pfTauPair.subleadPFTau();
@@ -108,6 +108,7 @@ std::ostream& operator<<(std::ostream& out, const PFTauPair& pfTauPair)
       << " phi = " << subleadPFTau->phi() << "," 
       << " decayMode = " << subleadPFTau->decayMode() << "," 
       << " mass = " << subleadPFTau->mass() << std::endl;
+  out << " vertex: x = " << subleadPFTau->vertex().x() << ", y = " << subleadPFTau->vertex().y() << ", z = " << subleadPFTau->vertex().z() << std::endl;
   const reco::PFCandidatePtr subleadPFTau_leadPFChargedHadrCand = subleadPFTau->leadPFChargedHadrCand();  
   out << " leadChargedHadrCand:";
   if ( subleadPFTau_leadPFChargedHadrCand.isNonnull() && subleadPFTau_leadPFChargedHadrCand.isAvailable() )
@@ -120,19 +121,18 @@ std::ostream& operator<<(std::ostream& out, const PFTauPair& pfTauPair)
     const reco::Track* subleadPFTau_leadTrack = subleadPFTau_leadPFChargedHadrCand->bestTrack();
     if ( subleadPFTau_leadTrack )
     {
-      out << " x = " << subleadPFTau_leadTrack->vertex().x() << ", y = " << subleadPFTau_leadTrack->vertex().y() << ", z = " << subleadPFTau_leadTrack->vertex().z() << std::endl;
+      out << " x = " << subleadPFTau_leadTrack->vertex().x() << ", y = " << subleadPFTau_leadTrack->vertex().y() << ", z = " << subleadPFTau_leadTrack->vertex().z() 
+          << " (dz = " << subleadPFTau_leadTrack->dz(pfTauPair.vertex()) << ")" << std::endl;
     } 
     else 
     {
-      out << " N/A";
+      out << " N/A" << std::endl;
     }
-    out << std::endl;
   } 
   else
   {
-    out << " N/A";
+    out << " N/A" << std::endl;
   }
-  out << std::endl;
   out << " sumChargedIso = " << pfTauPair.subleadPFTau_sumChargedIso() << std::endl;
 
   out << "dz = " << pfTauPair.dz() << std::endl;
